@@ -128,13 +128,6 @@
 			<scope>test</scope>
 		</dependency>
 
-		<dependency>
-			<groupId>org.apache.tika</groupId>
-			<artifactId>tika-parsers</artifactId>
-			<version>1.20</version>
-			<scope>system</scope>
-			<systemPath>${project.basedir}/src/main/resources/tika-parsers-1.20.jar</systemPath>
-		</dependency>
 	</dependencies>
 
 	<build>

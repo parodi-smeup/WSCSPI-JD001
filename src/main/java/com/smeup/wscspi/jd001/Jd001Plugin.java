@@ -18,7 +18,7 @@ public class Jd001Plugin extends SPIWsCConnectorAdapter {
 
     SezInterface iSez = null;
     SPIWsCConnectorConf iConfiguration = null;
-    private static final String RPG_SOURCE_NAME = "src/test/resources/rpg/JD_001B.rpgle";
+    private static final String RPG_SOURCE_NAME = "D:/IOT/rpg/JD_001B.rpgle";
     boolean iHttpDebug = false;
     String iUrlRootPath = null;
     int iTimeout = 60;
@@ -43,7 +43,7 @@ public class Jd001Plugin extends SPIWsCConnectorAdapter {
 
         iHttpDebug = (vHttpDebugMode != null) ? Boolean.valueOf(vHttpDebugMode) : false;
         if (iHttpDebug) {
-            log("Abilito Debug HTTP");
+            log(0, "Abilito Debug HTTP");
             System.setProperty("org.apache.commons.logging.Log", "org.apache.commons.logging.impl.SimpleLog");
             System.setProperty("org.apache.commons.logging.simplelog.showdatetime", "true");
             System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.http.impl.conn", "DEBUG");
@@ -57,14 +57,14 @@ public class Jd001Plugin extends SPIWsCConnectorAdapter {
             System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.commons.httpclient.wire", "DEBUG");
         }
 
-        log("Inizializzato " + getClass().getName()); 
-        log("Calling 'INZ'...");
+        log(0, "Inizializzato " + getClass().getName()); 
+        log(0, "Calling 'INZ'...");
         String response = executeOverridingSystemOut(new String[] {RPG_SOURCE_NAME, "INZ", iUrlRootPath, "", ""});
-        log(response + " ...done.");
+        log(0, response + " ...done.");
         
         return iConfiguration != null;
     }
-
+/*
     private void log(String aText) {
         SezInterface vSez = getSez();
         if (vSez != null) {
@@ -73,17 +73,17 @@ public class Jd001Plugin extends SPIWsCConnectorAdapter {
             System.out.println(aText);
         }
     }
-
+*/
     public SPIWsCConnectorResponse invoke(String aMetodo,
             SPIWsCConnectorInput aDataTable) {
 
         SPIWsCConnectorResponse vRet = new SPIWsCConnectorResponse();
 
-        log("Calling 'EXE'...");
+        log(0, "Calling 'EXE'...");
         String query = aDataTable.getData("Query");
         vRet.setFreeResponse(executeOverridingSystemOut(new String[] {RPG_SOURCE_NAME, "EXE", query, "", ""}));
 //        RunnerKt.main(new String[] {RPG_SOURCE_NAME, "EXE", query, "", ""});
-        log(vRet.getFreeResponse() + " ...done.");
+        log(0, vRet.getFreeResponse() + " ...done.");
 
         return vRet;
     }
@@ -118,9 +118,9 @@ public class Jd001Plugin extends SPIWsCConnectorAdapter {
             System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.commons.httpclient.auth", "INFO");
             System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.commons.httpclient.protocol", "INFO");
         }
-        log("Calling 'CLO'...");
+        log(0, "Calling 'CLO'...");
         RunnerKt.main((new String[] {RPG_SOURCE_NAME, "CLO", "", "", ""}));
-        log(" ...done.");
+        log(0, " ...done.");
         return true;
     }
 
