@@ -8,6 +8,7 @@
 	<properties>
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 
 	<repositories>
@@ -52,81 +53,72 @@
 			<artifactId>RPGasJAVA</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
-		<dependency>
-			<groupId>commons-httpclient</groupId>
-			<artifactId>commons-httpclient</artifactId>
-			<version>3.1</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>commons-io</groupId>
-			<artifactId>commons-io</artifactId>
-			<version>2.5</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.httpcomponents</groupId>
-			<artifactId>httpcore</artifactId>
-			<version>4.4.8</version>
-			<scope>provided</scope>
-		</dependency>
-		<!-- https://mvnrepository.com/artifact/javax.enterprise/cdi-api -->
-		<dependency>
-			<groupId>javax.enterprise</groupId>
-			<artifactId>cdi-api</artifactId>
-			<version>2.0</version>
-			<scope>provided</scope>
-		</dependency>
-		<!-- https://mvnrepository.com/artifact/dom4j/dom4j -->
-		<dependency>
-			<groupId>dom4j</groupId>
-			<artifactId>dom4j</artifactId>
-			<version>1.6.1</version>
-		</dependency>
-		<!-- https://mvnrepository.com/artifact/jaxen/jaxen -->
-		<dependency>
-			<groupId>jaxen</groupId>
-			<artifactId>jaxen</artifactId>
-			<version>1.1.6</version>
-		</dependency>
-		<!-- https://mvnrepository.com/artifact/javax.mail/mail -->
-		<dependency>
-			<groupId>javax.mail</groupId>
-			<artifactId>mail</artifactId>
-			<version>1.4.7</version>
-		</dependency>
-		<dependency>
-			<groupId>org.bouncycastle</groupId>
-			<artifactId>bcprov-jdk15on</artifactId>
-			<version>1.60</version>
-		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.bouncycastle/bcprov-ext-jdk15on -->
-		<dependency>
-			<groupId>org.bouncycastle</groupId>
-			<artifactId>bcprov-ext-jdk15on</artifactId>
-			<version>1.60</version>
-		</dependency>
+		<!-- <dependency> -->
+		<!-- <groupId>commons-httpclient</groupId> -->
+		<!-- <artifactId>commons-httpclient</artifactId> -->
+		<!-- <version>3.1</version> -->
+		<!-- <scope>provided</scope> -->
+		<!-- </dependency> -->
+		<!-- <dependency> -->
+		<!-- <groupId>commons-io</groupId> -->
+		<!-- <artifactId>commons-io</artifactId> -->
+		<!-- <version>2.5</version> -->
+		<!-- <scope>provided</scope> -->
+		<!-- </dependency> -->
+		<!-- <dependency> -->
+		<!-- <groupId>org.apache.httpcomponents</groupId> -->
+		<!-- <artifactId>httpcore</artifactId> -->
+		<!-- <version>4.4.8</version> -->
+		<!-- <scope>provided</scope> -->
+		<!-- </dependency> -->
+		<!-- <dependency> -->
+		<!-- <groupId>javax.enterprise</groupId> -->
+		<!-- <artifactId>cdi-api</artifactId> -->
+		<!-- <version>2.0</version> -->
+		<!-- <scope>provided</scope> -->
+		<!-- </dependency> -->
+		<!-- <dependency> -->
+		<!-- <groupId>dom4j</groupId> -->
+		<!-- <artifactId>dom4j</artifactId> -->
+		<!-- <version>1.6.1</version> -->
+		<!-- </dependency> -->
+		<!-- <dependency> -->
+		<!-- <groupId>jaxen</groupId> -->
+		<!-- <artifactId>jaxen</artifactId> -->
+		<!-- <version>1.1.6</version> -->
+		<!-- </dependency> -->
+		<!-- <dependency> -->
+		<!-- <groupId>javax.mail</groupId> -->
+		<!-- <artifactId>mail</artifactId> -->
+		<!-- <version>1.4.7</version> -->
+		<!-- </dependency> -->
+		<!-- <dependency> -->
+		<!-- <groupId>org.bouncycastle</groupId> -->
+		<!-- <artifactId>bcprov-jdk15on</artifactId> -->
+		<!-- <version>1.60</version> -->
+		<!-- </dependency> -->
+		<!-- <dependency> -->
+		<!-- <groupId>org.bouncycastle</groupId> -->
+		<!-- <artifactId>bcprov-ext-jdk15on</artifactId> -->
+		<!-- <version>1.60</version> -->
+		<!-- </dependency> -->
 
-		<!-- https://mvnrepository.com/artifact/org.bouncycastle/bcmail-jdk15on -->
-		<dependency>
-			<groupId>org.bouncycastle</groupId>
-			<artifactId>bcmail-jdk15on</artifactId>
-			<version>1.60</version>
-		</dependency>
+		<!-- <dependency> -->
+		<!-- <groupId>org.bouncycastle</groupId> -->
+		<!-- <artifactId>bcmail-jdk15on</artifactId> -->
+		<!-- <version>1.60</version> -->
+		<!-- </dependency> -->
 
-		<!-- https://mvnrepository.com/artifact/org.bouncycastle/bcpkix-jdk15on -->
-		<dependency>
-			<groupId>org.bouncycastle</groupId>
-			<artifactId>bcpkix-jdk15on</artifactId>
-			<version>1.60</version>
-		</dependency>
-
-		<!-- https://mvnrepository.com/artifact/commons-codec/commons-codec -->
-		<dependency>
-			<groupId>commons-codec</groupId>
-			<artifactId>commons-codec</artifactId>
-			<version>1.10</version>
-		</dependency>
+		<!-- <dependency> -->
+		<!-- <groupId>org.bouncycastle</groupId> -->
+		<!-- <artifactId>bcpkix-jdk15on</artifactId> -->
+		<!-- <version>1.60</version> -->
+		<!-- </dependency> -->
+		<!-- <dependency> -->
+		<!-- <groupId>commons-codec</groupId> -->
+		<!-- <artifactId>commons-codec</artifactId> -->
+		<!-- <version>1.10</version> -->
+		<!-- </dependency> -->
 
 		<!-- https://mvnrepository.com/artifact/junit/junit -->
 		<dependency>
@@ -144,23 +136,35 @@
 			<systemPath>${project.basedir}/src/main/resources/tika-parsers-1.20.jar</systemPath>
 		</dependency>
 	</dependencies>
-	
+
 	<build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-shade-plugin</artifactId>
-                <version>3.0.0</version>    
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>shade</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
-	
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-shade-plugin</artifactId>
+				<version>3.0.0</version>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>shade</goal>
+						</goals>
+						<configuration>
+							<filters>
+								<filter>
+									<artifact>*:*</artifact>
+									<excludes>
+										<exclude>META-INF/*.SF</exclude>
+										<exclude>META-INF/*.DSA</exclude>
+										<exclude>META-INF/*.RSA</exclude>
+									</excludes>
+								</filter>
+							</filters>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+
 </project>
