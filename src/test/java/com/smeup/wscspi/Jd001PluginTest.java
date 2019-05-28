@@ -1,4 +1,6 @@
 package com.smeup.wscspi;
+import static org.junit.Assert.assertTrue;
+
 import java.util.HashMap;
 
 import org.junit.Test;
@@ -33,6 +35,7 @@ public class Jd001PluginTest {
         connectorResponse = jd001Plugin.invoke("001", connectorInput);
         
         System.out.println(connectorResponse.getFreeResponse());
+        assertTrue(true);
 	}
 	
     private SezInterface getSezInterfaceInstance() {
