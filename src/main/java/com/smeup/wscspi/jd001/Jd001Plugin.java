@@ -18,7 +18,8 @@ public class Jd001Plugin extends SPIWsCConnectorAdapter {
 
     SezInterface iSez = null;
     SPIWsCConnectorConf iConfiguration = null;
-    private static final String RPG_SOURCE_NAME = "D:/IOT/rpg/JD_001B.rpgle";
+    private final String RPG_FILENAME = "JD_001B.rpgle";
+    private String iRpgSourceName = null;
     boolean iHttpDebug = false;
     String iUrlRootPath = null;
     int iTimeout = 60;
@@ -37,6 +38,9 @@ public class Jd001Plugin extends SPIWsCConnectorAdapter {
                 }
                 if ("UrlRootPath".equalsIgnoreCase(vKey)) {
                 	iUrlRootPath = iConfiguration.getData("UrlRootPath");
+                }
+                if ("RpgPath".equalsIgnoreCase(vKey)) {
+                	iRpgSourceName = iConfiguration.getData("RpgPath").trim() + RPG_FILENAME;
                 }
             }
         }
@@ -58,31 +62,21 @@ public class Jd001Plugin extends SPIWsCConnectorAdapter {
         }
 
         log(0, "Inizializzato " + getClass().getName()); 
-        log(0, "Calling 'INZ'...");
-        String response = executeOverridingSystemOut(new String[] {RPG_SOURCE_NAME, "INZ", iUrlRootPath, "", ""});
+        log(0, "Calling 'INZ' on " + iRpgSourceName + "...");
+        String response = executeOverridingSystemOut(new String[] {iRpgSourceName, "INZ", iUrlRootPath, "", ""});
         log(0, response + " ...done.");
         
         return iConfiguration != null;
     }
-/*
-    private void log(String aText) {
-        SezInterface vSez = getSez();
-        if (vSez != null) {
-            vSez.log(aText);
-        } else {
-            System.out.println(aText);
-        }
-    }
-*/
+
     public SPIWsCConnectorResponse invoke(String aMetodo,
             SPIWsCConnectorInput aDataTable) {
 
         SPIWsCConnectorResponse vRet = new SPIWsCConnectorResponse();
 
-        log(0, "Calling 'EXE'...");
+        log(0, "Calling 'EXE' on " + iRpgSourceName + "..." );
         String query = aDataTable.getData("Query");
-        vRet.setFreeResponse(executeOverridingSystemOut(new String[] {RPG_SOURCE_NAME, "EXE", query, "", ""}));
-//        RunnerKt.main(new String[] {RPG_SOURCE_NAME, "EXE", query, "", ""});
+        vRet.setFreeResponse(executeOverridingSystemOut(new String[] {iRpgSourceName, "EXE", query, "", ""}));
         log(0, vRet.getFreeResponse() + " ...done.");
 
         return vRet;
@@ -118,8 +112,8 @@ public class Jd001Plugin extends SPIWsCConnectorAdapter {
             System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.commons.httpclient.auth", "INFO");
             System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.commons.httpclient.protocol", "INFO");
         }
-        log(0, "Calling 'CLO'...");
-        RunnerKt.main((new String[] {RPG_SOURCE_NAME, "CLO", "", "", ""}));
+        log(0, "Calling 'CLO' on " + iRpgSourceName + "...");
+        RunnerKt.main((new String[] {iRpgSourceName, "CLO", "", "", ""}));
         log(0, " ...done.");
         return true;
     }

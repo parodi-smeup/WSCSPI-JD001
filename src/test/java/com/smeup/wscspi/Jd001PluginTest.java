@@ -28,6 +28,7 @@ public class Jd001PluginTest {
 		//Init (::SEZ Cod="A01")
         connectorConf.addData("HttpDebug", "true");
         connectorConf.addData("UrlRootPath", "http://www.smeup.com/");
+        connectorConf.addData("RpgPath", "src/test/resources/rpg/");
         jd001Plugin.init(sezInterface, connectorConf);
         
         //Exec (::SUB Cod="001")
