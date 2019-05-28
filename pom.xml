@@ -1,8 +1,10 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>com.smeup</groupId>
-  <artifactId>WSCSPI-JD001</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.smeup</groupId>
+	<artifactId>WSCSPI-JD001</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
 	<properties>
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
@@ -29,7 +31,6 @@
 		</snapshotRepository>
 	</distributionManagement>
 	<dependencies>
-
 		<dependency>
 			<groupId>com.github.smeup.smeup-rpg</groupId>
 			<artifactId>rpgJavaInterpreter-core</artifactId>
@@ -40,12 +41,16 @@
 			<artifactId>examples</artifactId>
 			<version>5e70fcd</version>
 		</dependency>
-
 		<dependency>
 			<groupId>com.smeup</groupId>
 			<artifactId>wscspi</artifactId>
 			<version>1.1.0</version>
 			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.smeup</groupId>
+			<artifactId>RPGasJAVA</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-httpclient</groupId>
