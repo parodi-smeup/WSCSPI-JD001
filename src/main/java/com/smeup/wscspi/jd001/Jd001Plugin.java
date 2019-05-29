@@ -24,9 +24,6 @@ public class Jd001Plugin extends SPIWsCConnectorAdapter {
 
 	public boolean init(SezInterface aSez, SPIWsCConnectorConf aConfiguration) {
 		iSez = aSez;
-
-		//load JD_URL program (a java programm called as an RPG from an interpreted RPG)
-		JavaSystemInterface.INSTANCE.addJavaInteropPackage("com.smeup.jd");
 		
 		iConfiguration = aConfiguration;
 		String vHttpDebugMode = "false";
@@ -95,6 +92,8 @@ public class Jd001Plugin extends SPIWsCConnectorAdapter {
 		PrintStream ps = new PrintStream(baos);
 		PrintStream old = System.out;
 		System.setOut(ps);
+		//load JD_URL program (a java programm called as an RPG from an interpreted RPG)
+		JavaSystemInterface.INSTANCE.addJavaInteropPackage("com.smeup.jd");
 		RunnerKt.main(args);
 		System.out.flush();
 		System.setOut(old);

@@ -1,4 +1,4 @@
-     V*=====================================================================
+﻿     V*=====================================================================
      V* Date      Release Au Description
      V* dd/mm/yy  nn.mm   xx Brief description
      V*=====================================================================
@@ -6,6 +6,7 @@
      V* 06/02/19  V5R1    PEDSTE Comments translated to english and added return code
      V* 07/02/19  V5R1    PEDSTE Array of Variables in initialisation
      V* 27/03/19  V5R1    CM Ricompilato
+     V* 21/05/19  V5R1    BMA Funzione EXE rinominata ESE per uniformità
      V*=====================================================================
      H/COPY QILEGEN,£INIZH
       *---------------------------------------------------------------
@@ -42,11 +43,6 @@
      D* M A I N
       *---------------------------------------------------------------
       *
-     C     *ENTRY        PLIST
-     C                   PARM                    U$FUNZ
-     C                   PARM                    U$METO
-     C                   PARM                    U$SVARSK
-     C                   PARM                    U$IN35
       * Initial settings
      C                   EXSR      IMP0
       * Function / Method
@@ -55,8 +51,8 @@
 1x   C                   WHEN      U$FUNZ='INZ'
      C                   EXSR      FINZ
       * Invoke URL
-1x   C                   WHEN      U$FUNZ='EXE'
-     C                   EXSR      FEXE
+1x   C                   WHEN      U$FUNZ='ESE'
+     C                   EXSR      FESE
       * Detach (empty subroutine in this case)
 1x   C                   WHEN      U$FUNZ='CLO'
      C                   EXSR      FCLO
@@ -72,6 +68,11 @@
       *--------------------------------------------------------------*
      C     £INIZI        BEGSR
       *
+     C     *ENTRY        PLIST
+     C                   PARM                    U$FUNZ
+     C                   PARM                    U$METO
+     C                   PARM                    U$SVARSK
+     C                   PARM                    U$IN35
       *
      C                   ENDSR
       *--------------------------------------------------------------*
@@ -102,7 +103,7 @@
       *--------------------------------------------------------------*
     RD* Invoke
       *--------------------------------------------------------------*
-     C     FEXE          BEGSR
+     C     FESE          BEGSR
       *
      C                   EVAL      U$IN35=*BLANKS
       *
@@ -125,7 +126,7 @@
      C                   CALL      'JD_URL'
      C                   PARM                    §§FUNZ
      C                   PARM                    §§METO
-     C                   PARM                    $$URL
+     C                   PARM                    $$SVAR
      C                   ENDIF
       *
      C                   ENDSR

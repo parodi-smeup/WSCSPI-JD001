@@ -3,6 +3,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.HashMap;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.smeup.wscspi.jd001.Jd001Plugin;
@@ -24,6 +25,7 @@ public class Jd001PluginTest {
     private Jd001Plugin jd001Plugin = new Jd001Plugin();
 	
 	@Test
+	@Ignore
 	public void test_launch() {
         connectorConf.addData("HttpDebug", "true");
         connectorConf.addData("UrlRootPath", "http://www.smeup.com/");
