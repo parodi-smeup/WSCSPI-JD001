@@ -25,15 +25,13 @@ public class Jd001PluginTest {
 	
 	@Test
 	public void test_launch() {
-		//Init (::SEZ Cod="A01")
         connectorConf.addData("HttpDebug", "true");
         connectorConf.addData("UrlRootPath", "http://www.smeup.com/");
         connectorConf.addData("RpgPath", "src/test/resources/rpg/");
         jd001Plugin.init(sezInterface, connectorConf);
         
-        //Exec (::SUB Cod="001")
         connectorInput.addData("Query", "aziende-del-gruppo-2");
-        connectorResponse = jd001Plugin.invoke("001", connectorInput);
+        connectorResponse = jd001Plugin.invoke("", connectorInput);
         
         System.out.println(connectorResponse.getFreeResponse());
         assertTrue(true);
