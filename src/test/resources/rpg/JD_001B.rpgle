@@ -124,13 +124,13 @@
      C                   EVAL      §§METO='HTTP'
      C                   EVAL      XXSVAR=%TRIMR($$SVAR)+U$SVAR
       *
-     C                   EVAL      DSP='CALLING PGM JD_URL'                     COSTANTE
+     C                   EVAL      DSP='CALLING PGM Jd_url'                     COSTANTE
      C                   DSPLY                   DSP
       *
-     C                   CALL      'JD_URL'
-     C                   PARM                    §§FUNZ
-     C                   PARM                    §§METO
-     C                   PARM                    XXSVAR
+     C*                   CALL      'Jd_url'
+     C*                   PARM                    §§FUNZ
+     C*                   PARM                    §§METO
+     C*                   PARM                    XXSVAR
       *
      C                   EVAL      DSP='JD_URL CALLED, FESE EXECUTED'           COSTANTE
      C                   DSPLY                   DSP

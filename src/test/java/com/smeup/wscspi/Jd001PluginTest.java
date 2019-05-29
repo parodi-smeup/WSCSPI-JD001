@@ -25,14 +25,13 @@ public class Jd001PluginTest {
     private Jd001Plugin jd001Plugin = new Jd001Plugin();
 	
 	@Test
-	@Ignore
 	public void test_launch() {
         connectorConf.addData("HttpDebug", "true");
         connectorConf.addData("UrlRootPath", "http://www.smeup.com/");
-        connectorConf.addData("RpgPath", "src/test/resources/rpg/");
+        connectorConf.addData("RpgSources", "src/test/resources/rpg/");
         jd001Plugin.init(sezInterface, connectorConf);
         
-        connectorInput.addData("Query", "aziende-del-gruppo-2");
+        connectorInput.addData("Query", "aziende-del-gruppo-2/");
         connectorResponse = jd001Plugin.invoke("", connectorInput);
         
         System.out.println(connectorResponse.getFreeResponse());

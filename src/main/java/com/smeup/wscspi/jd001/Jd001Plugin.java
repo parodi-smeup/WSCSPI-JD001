@@ -18,19 +18,20 @@ public class Jd001Plugin extends SPIWsCConnectorAdapter {
 	SPIWsCConnectorConf iConfiguration = null;
 	private final String RPG_FILENAME = "JD_001B.rpgle";
 	private String iRpgSourceName = null;
+	boolean overrideSystemOut = false;
 	boolean iHttpDebug = false;
 	String iUrlRootPath = null;
 	int iTimeout = 60;
 
 	public boolean init(SezInterface aSez, SPIWsCConnectorConf aConfiguration) {
 		iSez = aSez;
-		
+
 		iConfiguration = aConfiguration;
 		String vHttpDebugMode = "false";
 		if (iConfiguration != null) {
 			vHttpDebugMode = iConfiguration.getData("HttpDebug");
 			iUrlRootPath = iConfiguration.getData("UrlRootPath");
-			iRpgSourceName = iConfiguration.getData("RpgPath").trim() + RPG_FILENAME;
+			iRpgSourceName = iConfiguration.getData("RpgSources").trim() + RPG_FILENAME;
 		}
 
 		iHttpDebug = (vHttpDebugMode != null) ? Boolean.valueOf(vHttpDebugMode) : false;
@@ -55,15 +56,16 @@ public class Jd001Plugin extends SPIWsCConnectorAdapter {
 
 		log(0, "Inizializzato " + getClass().getName());
 		log(0, "Calling 'INZ' on " + iRpgSourceName + "...");
-		
+
 		String[] args = new String[5];
 		args[0] = iRpgSourceName;
 		args[1] = "INZ";
 		args[2] = "";
 		args[3] = iUrlRootPath;
 		args[4] = "";
-		String response = executeOverridingSystemOut(args);
-		
+
+		String response = executeRunnerKt(args);
+
 		log(0, response + " ...done.");
 
 		return iConfiguration != null;
@@ -81,23 +83,33 @@ public class Jd001Plugin extends SPIWsCConnectorAdapter {
 		args[2] = "";
 		args[3] = query;
 		args[4] = "";
-		vRet.setFreeResponse(executeOverridingSystemOut(args));
+		vRet.setFreeResponse(executeRunnerKt(args));
 		log(0, vRet.getFreeResponse() + " ...done.");
 
 		return vRet;
 	}
 
-	private String executeOverridingSystemOut(final String[] args) {
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		PrintStream ps = new PrintStream(baos);
-		PrintStream old = System.out;
-		System.setOut(ps);
-		//load JD_URL program (a java programm called as an RPG from an interpreted RPG)
+	private String executeRunnerKt(final String[] args) {
+
+		String response = "";
+
+		// load Jd_url program (a java programm called as an RPG from an interpreted
+		// RPG)
 		JavaSystemInterface.INSTANCE.addJavaInteropPackage("com.smeup.jd");
-		RunnerKt.main(args);
-		System.out.flush();
-		System.setOut(old);
-		return baos.toString();
+		if (overrideSystemOut) {
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			PrintStream ps = new PrintStream(baos);
+			PrintStream old = System.out;
+			System.setOut(ps);
+			RunnerKt.main(args);
+			System.out.flush();
+			System.setOut(old);
+			response = baos.toString();
+		}else {
+			RunnerKt.main(args);
+		}
+
+		return response;
 	}
 
 	public SezInterface getSez() {
@@ -121,21 +133,21 @@ public class Jd001Plugin extends SPIWsCConnectorAdapter {
 			System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.commons.httpclient.protocol",
 					"INFO");
 		}
-		
+
 		log(0, "Calling 'CLO' on " + iRpgSourceName + "...");
-		
+
 		String[] args = new String[5];
 		args[0] = iRpgSourceName;
 		args[1] = "CLO";
 		args[2] = "";
 		args[3] = "";
 		args[4] = "";
-		
-		String response = executeOverridingSystemOut(args);
+
+		String response = executeRunnerKt(args);
 
 		RunnerKt.main((new String[] { iRpgSourceName, "CLO", "", "", "" }));
 		log(0, response + " ...done.");
-		
+
 		return true;
 	}
 
