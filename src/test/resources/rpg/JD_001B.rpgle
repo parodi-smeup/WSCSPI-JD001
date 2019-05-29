@@ -127,10 +127,10 @@
      C                   EVAL      DSP='CALLING PGM Jd_url'                     COSTANTE
      C                   DSPLY                   DSP
       *
-     C*                   CALL      'Jd_url'
-     C*                   PARM                    §§FUNZ
-     C*                   PARM                    §§METO
-     C*                   PARM                    XXSVAR
+     C                   CALL      'Jd_url'
+     C                   PARM                    §§FUNZ
+     C                   PARM                    §§METO
+     C                   PARM                    XXSVAR
       *
      C                   EVAL      DSP='JD_URL CALLED, FESE EXECUTED'           COSTANTE
      C                   DSPLY                   DSP
