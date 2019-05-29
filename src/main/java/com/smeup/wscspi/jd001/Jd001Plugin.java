@@ -93,6 +93,8 @@ public class Jd001Plugin extends SPIWsCConnectorAdapter {
 
 		String response = "";
 
+		RunnerKt.setTraceMode(true);
+		
 		// load Jd_url program (a java programm called as an RPG from an interpreted
 		// RPG)
 		JavaSystemInterface.INSTANCE.addJavaInteropPackage("com.smeup.jd");
