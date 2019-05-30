@@ -2,6 +2,7 @@ package com.smeup.wscspi.jd001;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
+import java.util.HashMap;
 
 import com.smeup.rpgparser.RunnerKt;
 import com.smeup.rpgparser.jvminterop.JavaSystemInterface;
@@ -88,6 +89,7 @@ public class Jd001Plugin extends SPIWsCConnectorAdapter {
 		args[3] = query;
 		args[4] = "";
 		vRet.setFreeResponse(executeRunnerKt(args));
+		completeResponse(vRet);
 		log(0, vRet.getFreeResponse() + " ...done.");
 
 		return vRet;
@@ -158,6 +160,25 @@ public class Jd001Plugin extends SPIWsCConnectorAdapter {
 	public boolean ping() {
 		// TODO Auto-generated method stub
 		return true;
+	}
+	
+	private void completeResponse(SPIWsCConnectorResponse vRet) {
+		
+		String responseString = vRet.getFreeResponse();
+		
+        HashMap<String, String> vDataRow = new HashMap<String, String>();
+        String vResponseCode = "200";
+        String vStatusCode = "*OK";
+        if(responseString.contains("*ERROR")) {
+            vResponseCode = "99";
+            vStatusCode = "*ERROR";
+        }
+        vDataRow.put("ResponseCode", vResponseCode);
+        vDataRow.put("ResponseRawText", responseString);
+        vDataRow.put("Status", vStatusCode);
+        vDataRow.put("Value", responseString);
+        vDataRow.put("ResponseString", responseString);
+        vRet.addRow(vDataRow);
 	}
 
 }
