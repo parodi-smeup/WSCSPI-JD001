@@ -18,7 +18,7 @@ public class Jd001Plugin extends SPIWsCConnectorAdapter {
 	SPIWsCConnectorConf iConfiguration = null;
 	private final String RPG_FILENAME = "JD_001B.rpgle";
 	private String iRpgSourceName = null;
-	boolean overrideSystemOut = false;
+	boolean overrideSystemOut = true;
 	boolean iHttpDebug = false;
 	String iUrlRootPath = null;
 	int iTimeout = 60;
@@ -26,6 +26,10 @@ public class Jd001Plugin extends SPIWsCConnectorAdapter {
 	public boolean init(SezInterface aSez, SPIWsCConnectorConf aConfiguration) {
 		iSez = aSez;
 
+		// load Jd_url program (a java programm called as an RPG from an interpreted
+		// RPG)
+		JavaSystemInterface.INSTANCE.addJavaInteropPackage("com.smeup.jd");
+		
 		iConfiguration = aConfiguration;
 		String vHttpDebugMode = "false";
 		if (iConfiguration != null) {
@@ -93,11 +97,9 @@ public class Jd001Plugin extends SPIWsCConnectorAdapter {
 
 		String response = "";
 
-		RunnerKt.setTraceMode(true);
+		RunnerKt.setTraceMode(false);
 		
-		// load Jd_url program (a java programm called as an RPG from an interpreted
-		// RPG)
-		JavaSystemInterface.INSTANCE.addJavaInteropPackage("com.smeup.jd");
+
 		if (overrideSystemOut) {
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
 			PrintStream ps = new PrintStream(baos);

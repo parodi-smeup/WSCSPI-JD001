@@ -3,7 +3,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.HashMap;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.smeup.wscspi.jd001.Jd001Plugin;
@@ -26,16 +25,22 @@ public class Jd001PluginTest {
 	
 	@Test
 	public void test_launch() {
+		/*
+		 * WARNING! Due to temporarly unsupported RT (return RPG program indicator), 
+		 * intepreted programs cannot run in statefull mode (so no memory manteined between two calls) 
+		 * This means vars like "UrlRootPath" need to be set again on invoke call, more precisely
+		 * UrlRootPath can't be obtained appending value from previous init method and next invoke method.
+		 */
         connectorConf.addData("HttpDebug", "true");
-        connectorConf.addData("UrlRootPath", "http://www.smeup.com/");
+        connectorConf.addData("UrlRootPath", "http://www.smeup.com/"); //WARNING! No effect cause this value will be override by invoke
         connectorConf.addData("RpgSources", "src/test/resources/rpg/");
         jd001Plugin.init(sezInterface, connectorConf);
         
-        connectorInput.addData("Query", "aziende-del-gruppo-2/");
+        connectorInput.addData("Query", "http://www.mocky.io/v2/5185415ba171ea3a00704eed");
         connectorResponse = jd001Plugin.invoke("", connectorInput);
-        
-        System.out.println(connectorResponse.getFreeResponse());
-        assertTrue(true);
+
+        final String mockyResponse = "{\"hello\": \"world\"}";
+        assertTrue(mockyResponse.equals(connectorResponse.getFreeResponse().trim()));
 	}
 	
     private SezInterface getSezInterfaceInstance() {
