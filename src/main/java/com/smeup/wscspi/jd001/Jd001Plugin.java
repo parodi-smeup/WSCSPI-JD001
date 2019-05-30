@@ -1,9 +1,13 @@
 package com.smeup.wscspi.jd001;
 
+
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
+import com.smeup.rpgparser.CommandLineProgram;
 import com.smeup.rpgparser.RunnerKt;
 import com.smeup.rpgparser.jvminterop.JavaSystemInterface;
 
@@ -21,15 +25,11 @@ public class Jd001Plugin extends SPIWsCConnectorAdapter {
 	private String iRpgSourceName = null;
 	boolean overrideSystemOut = true;
 	boolean iHttpDebug = false;
-	String iUrlRootPath = null;
-	int iTimeout = 60;
+	private String iUrlRootPath = null;
+	private CommandLineProgram commandLineProgram;
 
 	public boolean init(SezInterface aSez, SPIWsCConnectorConf aConfiguration) {
 		iSez = aSez;
-
-		// load Jd_url program (a java programm called as an RPG from an interpreted
-		// RPG)
-		JavaSystemInterface.INSTANCE.addJavaInteropPackage("com.smeup.jd");
 		
 		iConfiguration = aConfiguration;
 		String vHttpDebugMode = "false";
@@ -58,18 +58,26 @@ public class Jd001Plugin extends SPIWsCConnectorAdapter {
 					"DEBUG");
 			System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.commons.httpclient.wire", "DEBUG");
 		}
+		
+
+		// load Jd_url program (a java programm called as an RPG from an interpreted
+		// RPG)
+		JavaSystemInterface.INSTANCE.addJavaInteropPackage("com.smeup.jd");
+		
+		// load JD_001 program
+		commandLineProgram = RunnerKt.getProgram(iRpgSourceName);
+		commandLineProgram.setTraceMode(false);
 
 		log(0, "Inizializzato " + getClass().getName());
 		log(0, "Calling 'INZ' on " + iRpgSourceName + "...");
+		
+		List<String> parms = new ArrayList<String>();
+		parms.add("INZ");
+		parms.add("");
+		parms.add(iUrlRootPath);
+		parms.add("");
 
-		String[] args = new String[5];
-		args[0] = iRpgSourceName;
-		args[1] = "INZ";
-		args[2] = "";
-		args[3] = iUrlRootPath;
-		args[4] = "";
-
-		String response = executeRunnerKt(args);
+		String response = executeRunnerKt(parms);
 
 		log(0, response + " ...done.");
 
@@ -82,37 +90,39 @@ public class Jd001Plugin extends SPIWsCConnectorAdapter {
 
 		log(0, "Calling 'ESE' on " + iRpgSourceName + "...");
 		String query = aDataTable.getData("Query");
-		String[] args = new String[5];
-		args[0] = iRpgSourceName;
-		args[1] = "ESE";
-		args[2] = "";
-		args[3] = query;
-		args[4] = "";
-		vRet.setFreeResponse(executeRunnerKt(args));
+
+		List<String> parms = new ArrayList<String>();
+		parms.add("ESE");
+		parms.add("");
+		parms.add(query);
+		parms.add("");
+		vRet.setFreeResponse(executeRunnerKt(parms));
 		completeResponse(vRet);
+		
 		log(0, vRet.getFreeResponse() + " ...done.");
 
 		return vRet;
 	}
 
-	private String executeRunnerKt(final String[] args) {
+	private String executeRunnerKt(final List<String> parms) {
 
 		String response = "";
 
-		RunnerKt.setTraceMode(false);
+		CommandLineProgram program = RunnerKt.getProgram(iRpgSourceName);
+        program.setTraceMode(false);
 		
 
 		if (overrideSystemOut) {
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
 			PrintStream ps = new PrintStream(baos);
 			PrintStream old = System.out;
-			System.setOut(ps);
-			RunnerKt.main(args);
+			System.setOut(ps);			
+			commandLineProgram.singleCall(parms);
 			System.out.flush();
 			System.setOut(old);
 			response = baos.toString();
 		}else {
-			RunnerKt.main(args);
+			commandLineProgram.singleCall(parms);
 		}
 
 		return response;
@@ -142,16 +152,14 @@ public class Jd001Plugin extends SPIWsCConnectorAdapter {
 
 		log(0, "Calling 'CLO' on " + iRpgSourceName + "...");
 
-		String[] args = new String[5];
-		args[0] = iRpgSourceName;
-		args[1] = "CLO";
-		args[2] = "";
-		args[3] = "";
-		args[4] = "";
+		List<String> parms = new ArrayList<String>();
+		parms.add("CLO");
+		parms.add("");
+		parms.add("");
+		parms.add("");
+		
+		String response = executeRunnerKt(parms);
 
-		String response = executeRunnerKt(args);
-
-		RunnerKt.main((new String[] { iRpgSourceName, "CLO", "", "", "" }));
 		log(0, response + " ...done.");
 
 		return true;

@@ -35,12 +35,12 @@
 		<dependency>
 			<groupId>com.github.smeup.smeup-rpg</groupId>
 			<artifactId>rpgJavaInterpreter-core</artifactId>
-			<version>7140a12</version>
+			<version>fb228eb</version>
 		</dependency>
 		<dependency>
 			<groupId>com.github.smeup.smeup-rpg</groupId>
 			<artifactId>examples</artifactId>
-			<version>7140a12</version>
+			<version>fb228eb</version>
 		</dependency>
 		<dependency>
 			<groupId>com.smeup</groupId>
