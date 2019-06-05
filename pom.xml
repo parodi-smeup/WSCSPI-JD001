@@ -11,13 +11,6 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 
-	<repositories>
-		<repository>
-			<id>jitpack.io</id>
-			<url>https://jitpack.io</url>
-		</repository>
-	</repositories>
-
 	<distributionManagement>
 		<repository>
 			<id>releases</id>
@@ -35,12 +28,12 @@
 		<dependency>
 			<groupId>com.github.smeup.smeup-rpg</groupId>
 			<artifactId>rpgJavaInterpreter-core</artifactId>
-			<version>fb228eb</version>
+			<version>9094aae</version>
 		</dependency>
 		<dependency>
 			<groupId>com.github.smeup.smeup-rpg</groupId>
 			<artifactId>examples</artifactId>
-			<version>fb228eb</version>
+			<version>9094aae</version>
 		</dependency>
 		<dependency>
 			<groupId>com.smeup</groupId>

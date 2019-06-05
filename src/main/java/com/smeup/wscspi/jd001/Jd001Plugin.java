@@ -3,6 +3,7 @@ package com.smeup.wscspi.jd001;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -27,9 +28,19 @@ public class Jd001Plugin extends SPIWsCConnectorAdapter {
 	boolean iHttpDebug = false;
 	private String iUrlRootPath = null;
 	private CommandLineProgram commandLineProgram;
+	
+	private JavaSystemInterface javaSystemInterface;
+	private ByteArrayOutputStream baos = new ByteArrayOutputStream();
+	private PrintStream  ps = new PrintStream(baos);
 
 	public boolean init(SezInterface aSez, SPIWsCConnectorConf aConfiguration) {
 		iSez = aSez;
+
+		baos = new ByteArrayOutputStream();
+		ps = new PrintStream(baos);
+		// load Jd_url program (a java programm called as an RPG from an interpreted RPG)
+		javaSystemInterface = new JavaSystemInterface(ps);
+		javaSystemInterface.addJavaInteropPackage("com.smeup.jd");
 		
 		iConfiguration = aConfiguration;
 		String vHttpDebugMode = "false";
@@ -60,14 +71,6 @@ public class Jd001Plugin extends SPIWsCConnectorAdapter {
 		}
 		
 
-		// load Jd_url program (a java programm called as an RPG from an interpreted
-		// RPG)
-		JavaSystemInterface.INSTANCE.addJavaInteropPackage("com.smeup.jd");
-		
-		// load JD_001 program
-		commandLineProgram = RunnerKt.getProgram(iRpgSourceName);
-		commandLineProgram.setTraceMode(false);
-
 		log(0, "Inizializzato " + getClass().getName());
 		log(0, "Calling 'INZ' on " + iRpgSourceName + "...");
 		
@@ -77,7 +80,7 @@ public class Jd001Plugin extends SPIWsCConnectorAdapter {
 		parms.add(iUrlRootPath);
 		parms.add("");
 
-		String response = executeRunnerKt(parms);
+		String response = callProgram(parms);
 
 		log(0, response + " ...done.");
 
@@ -96,7 +99,8 @@ public class Jd001Plugin extends SPIWsCConnectorAdapter {
 		parms.add("");
 		parms.add(query);
 		parms.add("");
-		vRet.setFreeResponse(executeRunnerKt(parms));
+		
+		vRet.setFreeResponse(callProgram(parms));
 		completeResponse(vRet);
 		
 		log(0, vRet.getFreeResponse() + " ...done.");
@@ -104,34 +108,23 @@ public class Jd001Plugin extends SPIWsCConnectorAdapter {
 		return vRet;
 	}
 
-	private String executeRunnerKt(final List<String> parms) {
-
-		String response = "";
-
-		CommandLineProgram program = RunnerKt.getProgram(iRpgSourceName);
-        program.setTraceMode(false);
-		
-
-		if (overrideSystemOut) {
-			ByteArrayOutputStream baos = new ByteArrayOutputStream();
-			PrintStream ps = new PrintStream(baos);
-			PrintStream old = System.out;
-			System.setOut(ps);			
-			commandLineProgram.singleCall(parms);
-			System.out.flush();
-			System.setOut(old);
-			response = baos.toString();
-		}else {
-			commandLineProgram.singleCall(parms);
-		}
-
-		return response;
-	}
-
 	public SezInterface getSez() {
 		// TODO Auto-generated method stub
 		return iSez;
 	}
+	
+	private String callProgram(final List<String> parms) {
+		
+		// call JD_001 program
+		commandLineProgram = RunnerKt.getProgram(iRpgSourceName, javaSystemInterface);
+		commandLineProgram.setTraceMode(false);
+		commandLineProgram.singleCall(parms);
+		
+		String response = new String(baos.toByteArray(), StandardCharsets.UTF_8);
+	    
+	    return response;
+	}
+	
 
 	public boolean unplug() {
 		if (iHttpDebug) {
@@ -158,7 +151,7 @@ public class Jd001Plugin extends SPIWsCConnectorAdapter {
 		parms.add("");
 		parms.add("");
 		
-		String response = executeRunnerKt(parms);
+		String response = callProgram(parms);
 
 		log(0, response + " ...done.");
 
