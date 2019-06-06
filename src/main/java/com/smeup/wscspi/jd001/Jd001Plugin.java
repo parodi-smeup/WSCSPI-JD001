@@ -29,6 +29,7 @@ public class Jd001Plugin extends SPIWsCConnectorAdapter {
 	private JavaSystemInterface javaSystemInterface;
 	private ByteArrayOutputStream byteArrayOutputStream;
 	private PrintStream printStream;
+	private CommandLineProgram program;
 
 	public boolean init(SezInterface sezInterface, SPIWsCConnectorConf connectorConf) {
 
@@ -46,6 +47,7 @@ public class Jd001Plugin extends SPIWsCConnectorAdapter {
 		javaSystemInterface = new JavaSystemInterface(printStream);
 		javaSystemInterface.addJavaInteropPackage("com.smeup.jd");
 
+		
 		// Parameters from script SCP_SET.LOA38_JD1
 		if (configuration != null) {
 			String debug = configuration.getData("HttpDebug");
@@ -54,6 +56,10 @@ public class Jd001Plugin extends SPIWsCConnectorAdapter {
 			rpgSourceName = configuration.getData("RpgSources").trim() + RPG_FILENAME;
 		}
 
+		program = RunnerKt.getProgram(rpgSourceName, javaSystemInterface);
+		
+		program.setTraceMode(true);
+		
 		if (httpDebug) {
 			switchDebug(true);
 		}
@@ -98,14 +104,13 @@ public class Jd001Plugin extends SPIWsCConnectorAdapter {
 	}
 
 	private String callProgram(final List<String> parms) {
+		log(0, "Calling " + rpgSourceName + " with " + parms.size() + " parms: " + String.join(",", parms));
 
-		log(0, "Calling " + rpgSourceName + " with 4 parms: " + String.join(",", parms));
-
-		commandLineProgram = RunnerKt.getProgram(rpgSourceName, javaSystemInterface);
-		commandLineProgram.setTraceMode(false);
-		commandLineProgram.singleCall(parms);
-
-		return new String(byteArrayOutputStream.toByteArray(), StandardCharsets.UTF_8);
+		program.singleCall(parms);
+		String response = new String(byteArrayOutputStream.toByteArray(), StandardCharsets.UTF_8);
+		byteArrayOutputStream.reset();
+		
+		return response;
 	}
 
 	public boolean unplug() {
@@ -167,7 +172,7 @@ public class Jd001Plugin extends SPIWsCConnectorAdapter {
 			System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.commons.httpclient.protocol",
 					"DEBUG");
 			System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.commons.httpclient.wire", "DEBUG");
-		}else {
+		} else {
 			log(0, "Set OFF Debug HTTP");
 			httpDebug = false;
 			System.setProperty("org.apache.commons.logging.Log", "");
