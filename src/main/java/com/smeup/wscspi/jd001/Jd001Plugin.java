@@ -30,8 +30,8 @@ public class Jd001Plugin extends SPIWsCConnectorAdapter {
 	private CommandLineProgram commandLineProgram;
 	
 	private JavaSystemInterface javaSystemInterface;
-	private ByteArrayOutputStream baos = new ByteArrayOutputStream();
-	private PrintStream  ps = new PrintStream(baos);
+	private ByteArrayOutputStream baos;
+	private PrintStream  ps;
 
 	public boolean init(SezInterface aSez, SPIWsCConnectorConf aConfiguration) {
 		iSez = aSez;
