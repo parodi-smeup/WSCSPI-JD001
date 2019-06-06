@@ -1,6 +1,5 @@
 package com.smeup.wscspi.jd001;
 
-
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
@@ -20,39 +19,139 @@ import Smeup.smeui.wscspi.interaction.SPIWsCConnectorAdapter;
 
 public class Jd001Plugin extends SPIWsCConnectorAdapter {
 
-	SezInterface iSez = null;
-	SPIWsCConnectorConf iConfiguration = null;
+	private SezInterface sez = null;
+	private SPIWsCConnectorConf configuration = null;
 	private final String RPG_FILENAME = "JD_001B.rpgle";
-	private String iRpgSourceName = null;
-	boolean overrideSystemOut = true;
-	boolean iHttpDebug = false;
-	private String iUrlRootPath = null;
+	private String rpgSourceName = null;
+	private boolean httpDebug = false;
+	private String urlRoothPath = null;
 	private CommandLineProgram commandLineProgram;
-	
 	private JavaSystemInterface javaSystemInterface;
-	private ByteArrayOutputStream baos;
-	private PrintStream  ps;
+	private ByteArrayOutputStream byteArrayOutputStream;
+	private PrintStream printStream;
 
-	public boolean init(SezInterface aSez, SPIWsCConnectorConf aConfiguration) {
-		iSez = aSez;
+	public boolean init(SezInterface sezInterface, SPIWsCConnectorConf connectorConf) {
 
-		baos = new ByteArrayOutputStream();
-		ps = new PrintStream(baos);
-		// load Jd_url program (a java programm called as an RPG from an interpreted RPG)
-		javaSystemInterface = new JavaSystemInterface(ps);
+		log(0, "Called init " + getClass().getName());
+
+		sez = sezInterface;
+		configuration = connectorConf;
+
+		// To handle system.out response
+		byteArrayOutputStream = new ByteArrayOutputStream();
+		printStream = new PrintStream(byteArrayOutputStream);
+
+		// load Jd_url program (a java programm called as an RPG from an interpreted
+		// RPG)
+		javaSystemInterface = new JavaSystemInterface(printStream);
 		javaSystemInterface.addJavaInteropPackage("com.smeup.jd");
-		
-		iConfiguration = aConfiguration;
-		String vHttpDebugMode = "false";
-		if (iConfiguration != null) {
-			vHttpDebugMode = iConfiguration.getData("HttpDebug");
-			iUrlRootPath = iConfiguration.getData("UrlRootPath");
-			iRpgSourceName = iConfiguration.getData("RpgSources").trim() + RPG_FILENAME;
+
+		// Parameters from script SCP_SET.LOA38_JD1
+		if (configuration != null) {
+			String debug = configuration.getData("HttpDebug");
+			httpDebug = (debug != null && !"".equals(debug)) ? Boolean.valueOf(debug) : false;
+			urlRoothPath = configuration.getData("UrlRootPath");
+			rpgSourceName = configuration.getData("RpgSources").trim() + RPG_FILENAME;
 		}
 
-		iHttpDebug = (vHttpDebugMode != null) ? Boolean.valueOf(vHttpDebugMode) : false;
-		if (iHttpDebug) {
-			log(0, "Abilito Debug HTTP");
+		if (httpDebug) {
+			switchDebug(true);
+		}
+
+		// Call rpg program with parameters
+		List<String> parms = new ArrayList<String>();
+		parms.add("INZ");
+		parms.add("");
+		parms.add(urlRoothPath);
+		parms.add("");
+		String response = callProgram(parms);
+
+		log(0, response + " ...done.");
+
+		return configuration != null;
+	}
+
+	public SPIWsCConnectorResponse invoke(String aMetodo, SPIWsCConnectorInput aDataTable) {
+
+		log(0, "Called invoke " + getClass().getName());
+
+		SPIWsCConnectorResponse connectorResponse = new SPIWsCConnectorResponse();
+
+		// Call rpg program with parameters
+		List<String> parms = new ArrayList<String>();
+		parms.add("ESE");
+		parms.add("");
+		parms.add(aDataTable.getData("Query"));
+		parms.add("");
+		connectorResponse.setFreeResponse(callProgram(parms));
+
+		completeResponse(connectorResponse);
+
+		log(0, connectorResponse.getFreeResponse() + " ...done.");
+
+		return connectorResponse;
+	}
+
+	public SezInterface getSez() {
+		// TODO Auto-generated method stub
+		return sez;
+	}
+
+	private String callProgram(final List<String> parms) {
+
+		log(0, "Calling " + rpgSourceName + " with 4 parms: " + String.join(",", parms));
+
+		commandLineProgram = RunnerKt.getProgram(rpgSourceName, javaSystemInterface);
+		commandLineProgram.setTraceMode(false);
+		commandLineProgram.singleCall(parms);
+
+		return new String(byteArrayOutputStream.toByteArray(), StandardCharsets.UTF_8);
+	}
+
+	public boolean unplug() {
+
+		switchDebug(false);
+
+		// Call rpg program with parameters
+		List<String> parms = new ArrayList<String>();
+		parms.add("CLO");
+		parms.add("");
+		parms.add("");
+		parms.add("");
+		String response = callProgram(parms);
+
+		log(0, response + " ...done.");
+
+		return true;
+	}
+
+	public boolean ping() {
+		// TODO Auto-generated method stub
+		return true;
+	}
+
+	private void completeResponse(SPIWsCConnectorResponse connectorResponse) {
+
+		String responseString = connectorResponse.getFreeResponse();
+		HashMap<String, String> dataRow = new HashMap<String, String>();
+		String responseCode = "200";
+		String statusCode = "*OK";
+		if (responseString.contains("*ERROR")) {
+			responseCode = "99";
+			statusCode = "*ERROR";
+		}
+		dataRow.put("ResponseCode", responseCode);
+		dataRow.put("ResponseRawText", responseString);
+		dataRow.put("Status", statusCode);
+		dataRow.put("Value", responseString);
+		dataRow.put("ResponseString", responseString);
+		connectorResponse.addRow(dataRow);
+	}
+
+	private void switchDebug(final boolean switchDebugON) {
+
+		if (switchDebugON) {
+			log(0, "Set ON Debug HTTP");
 			System.setProperty("org.apache.commons.logging.Log", "org.apache.commons.logging.impl.SimpleLog");
 			System.setProperty("org.apache.commons.logging.simplelog.showdatetime", "true");
 			System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.http.impl.conn", "DEBUG");
@@ -68,67 +167,9 @@ public class Jd001Plugin extends SPIWsCConnectorAdapter {
 			System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.commons.httpclient.protocol",
 					"DEBUG");
 			System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.commons.httpclient.wire", "DEBUG");
-		}
-		
-
-		log(0, "Inizializzato " + getClass().getName());
-		log(0, "Calling 'INZ' on " + iRpgSourceName + "...");
-		
-		List<String> parms = new ArrayList<String>();
-		parms.add("INZ");
-		parms.add("");
-		parms.add(iUrlRootPath);
-		parms.add("");
-
-		String response = callProgram(parms);
-
-		log(0, response + " ...done.");
-
-		return iConfiguration != null;
-	}
-
-	public SPIWsCConnectorResponse invoke(String aMetodo, SPIWsCConnectorInput aDataTable) {
-
-		SPIWsCConnectorResponse vRet = new SPIWsCConnectorResponse();
-
-		log(0, "Calling 'ESE' on " + iRpgSourceName + "...");
-		String query = aDataTable.getData("Query");
-
-		List<String> parms = new ArrayList<String>();
-		parms.add("ESE");
-		parms.add("");
-		parms.add(query);
-		parms.add("");
-		
-		vRet.setFreeResponse(callProgram(parms));
-		completeResponse(vRet);
-		
-		log(0, vRet.getFreeResponse() + " ...done.");
-
-		return vRet;
-	}
-
-	public SezInterface getSez() {
-		// TODO Auto-generated method stub
-		return iSez;
-	}
-	
-	private String callProgram(final List<String> parms) {
-		
-		// call JD_001 program
-		commandLineProgram = RunnerKt.getProgram(iRpgSourceName, javaSystemInterface);
-		commandLineProgram.setTraceMode(false);
-		commandLineProgram.singleCall(parms);
-		
-		String response = new String(baos.toByteArray(), StandardCharsets.UTF_8);
-	    
-	    return response;
-	}
-	
-
-	public boolean unplug() {
-		if (iHttpDebug) {
-			iHttpDebug = false;
+		}else {
+			log(0, "Set OFF Debug HTTP");
+			httpDebug = false;
 			System.setProperty("org.apache.commons.logging.Log", "");
 			System.setProperty("org.apache.commons.logging.simplelog.showdatetime", "true");
 
@@ -142,44 +183,6 @@ public class Jd001Plugin extends SPIWsCConnectorAdapter {
 			System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.commons.httpclient.protocol",
 					"INFO");
 		}
-
-		log(0, "Calling 'CLO' on " + iRpgSourceName + "...");
-
-		List<String> parms = new ArrayList<String>();
-		parms.add("CLO");
-		parms.add("");
-		parms.add("");
-		parms.add("");
-		
-		String response = callProgram(parms);
-
-		log(0, response + " ...done.");
-
-		return true;
-	}
-
-	public boolean ping() {
-		// TODO Auto-generated method stub
-		return true;
-	}
-	
-	private void completeResponse(SPIWsCConnectorResponse vRet) {
-		
-		String responseString = vRet.getFreeResponse();
-		
-        HashMap<String, String> vDataRow = new HashMap<String, String>();
-        String vResponseCode = "200";
-        String vStatusCode = "*OK";
-        if(responseString.contains("*ERROR")) {
-            vResponseCode = "99";
-            vStatusCode = "*ERROR";
-        }
-        vDataRow.put("ResponseCode", vResponseCode);
-        vDataRow.put("ResponseRawText", responseString);
-        vDataRow.put("Status", vStatusCode);
-        vDataRow.put("Value", responseString);
-        vDataRow.put("ResponseString", responseString);
-        vRet.addRow(vDataRow);
 	}
 
 }
