@@ -29,7 +29,6 @@ public class Jd001Plugin extends SPIWsCConnectorAdapter {
 	private JavaSystemInterface javaSystemInterface;
 	private ByteArrayOutputStream byteArrayOutputStream;
 	private PrintStream printStream;
-	private CommandLineProgram program;
 
 	public boolean init(SezInterface sezInterface, SPIWsCConnectorConf connectorConf) {
 
@@ -42,7 +41,7 @@ public class Jd001Plugin extends SPIWsCConnectorAdapter {
 		byteArrayOutputStream = new ByteArrayOutputStream();
 		printStream = new PrintStream(byteArrayOutputStream);
 
-		// load Jd_url program (a java programm called as an RPG from an interpreted
+		// load Jd_url commandLineProgram (a java programm called as an RPG from an interpreted
 		// RPG)
 		javaSystemInterface = new JavaSystemInterface(printStream);
 		javaSystemInterface.addJavaInteropPackage("com.smeup.jd");
@@ -56,15 +55,15 @@ public class Jd001Plugin extends SPIWsCConnectorAdapter {
 			rpgSourceName = configuration.getData("RpgSources").trim() + RPG_FILENAME;
 		}
 
-		program = RunnerKt.getProgram(rpgSourceName, javaSystemInterface);
+		commandLineProgram = RunnerKt.getProgram(rpgSourceName, javaSystemInterface);
 		
-		program.setTraceMode(true);
+		commandLineProgram.setTraceMode(true);
 		
 		if (httpDebug) {
 			switchDebug(true);
 		}
 
-		// Call rpg program with parameters
+		// Call rpg commandLineProgram with parameters
 		List<String> parms = new ArrayList<String>();
 		parms.add("INZ");
 		parms.add("");
@@ -83,7 +82,7 @@ public class Jd001Plugin extends SPIWsCConnectorAdapter {
 
 		SPIWsCConnectorResponse connectorResponse = new SPIWsCConnectorResponse();
 
-		// Call rpg program with parameters
+		// Call rpg commandLineProgram with parameters
 		List<String> parms = new ArrayList<String>();
 		parms.add("ESE");
 		parms.add("");
@@ -106,7 +105,7 @@ public class Jd001Plugin extends SPIWsCConnectorAdapter {
 	private String callProgram(final List<String> parms) {
 		log(0, "Calling " + rpgSourceName + " with " + parms.size() + " parms: " + String.join(",", parms));
 
-		program.singleCall(parms);
+		commandLineProgram.singleCall(parms);
 		String response = new String(byteArrayOutputStream.toByteArray(), StandardCharsets.UTF_8);
 		byteArrayOutputStream.reset();
 		
@@ -117,7 +116,7 @@ public class Jd001Plugin extends SPIWsCConnectorAdapter {
 
 		switchDebug(false);
 
-		// Call rpg program with parameters
+		// Call rpg commandLineProgram with parameters
 		List<String> parms = new ArrayList<String>();
 		parms.add("CLO");
 		parms.add("");
